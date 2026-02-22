@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produktdetails | Zetta GmbH</title>
+    <style>
+        :root {
+            --primary: #004a99;
+            --secondary: #00a8a8;
+            --bg-body: #f4f7f6;
+            --sidebar-width: 300px;
+        }
+
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; display: flex; background: var(--bg-body); color: #333; height: 100vh; overflow: hidden; }
+
+        /* 左侧侧边栏 */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: #fff;
+            height: 100vh;
+            border-right: 1px solid #ddd;
+            overflow-y: auto;
+            padding: 20px 0;
+            flex-shrink: 0;
+            z-index: 100;
+        }
+        .sidebar-header { padding: 0 25px 20px; border-bottom: 1px solid #eee; }
+        .back-home { color: var(--primary); text-decoration: none; font-weight: bold; font-size: 0.9em; }
+        
+        .menu-group { margin-top: 20px; }
+        .menu-title { 
+            padding: 10px 25px; font-weight: bold; background: #f8f9fa; 
+            color: var(--primary); border-left: 4px solid var(--primary);
+            font-size: 0.95em;
+        }
+        .menu-item { 
+            display: block; padding: 10px 35px; color: #555; 
+            text-decoration: none; font-size: 0.85em; transition: 0.2s;
+            cursor: pointer;
+        }
+        .menu-item:hover { background: #eef2f7; color: var(--primary); padding-left: 40px; }
+        /* 选中状态样式 */
+        .menu-item.active { background: var(--primary); color: #fff; font-weight: bold; padding-left: 40px; }
+
+        /* 右侧内容区 */
+        .main-content { 
+            flex-grow: 1; 
+            padding: 40px; 
+            overflow-y: auto; 
+            height: 100vh; 
+            scroll-behavior: smooth;
+        }
+
+        /* 初始隐藏所有板块 */
+        .category-section { 
+            display: none; 
+            background: #fff; 
+            padding: 35px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            animation: fadeIn 0.4s ease; /* 切换时的淡入效果 */
+        }
+        
+        /* 激活显示的板块 */
+        .category-section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title { border-bottom: 2px solid var(--primary); padding-bottom: 15px; margin-bottom: 30px; }
+        .section-title h2 { margin: 0; color: var(--primary); font-size: 1.8em; }
+        .section-title span { color: #888; font-style: italic; font-size: 0.6em; text-transform: uppercase; }
+
+        .product-sub-item { margin-top: 30px; padding-top: 20px; border-top: 1px dashed #eee; }
+        .product-sub-item h3 { color: #444; font-size: 1.2em; margin-bottom: 15px; display: flex; align-items: center; }
+        .product-sub-item h3::before { content: "•"; color: var(--secondary); font-size: 1.5em; margin-right: 10px; }
+
+        /* 图片网格：固定一行4副 */
+        .gallery { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 20px; 
+            margin: 20px 0; 
+        }
+        .gallery img { 
+            width: 100%; 
+            max-width: 300px; 
+            height: auto; 
+            border-radius: 6px; 
+            border: 1px solid #eee; 
+            display: block;
+            margin: 0 auto; 
+            transition: 0.3s;
+        }
+        .gallery img:hover { transform: scale(1.05); border-color: var(--secondary); cursor: zoom-in; }
+
+        .spec-table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.9em; }
+        .spec-table td { border: 1px solid #f0f0f0; padding: 10px; }
+        .spec-table td:first-child { background: #fafafa; font-weight: bold; width: 30%; color: #666; }
+
+        @media (max-width: 900px) {
+            .sidebar { width: 180px; }
+            .main-content { padding: 20px; }
+            .gallery { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="sidebar-header">
+        <a href="index.html" class="back-home">← Home / 返回首页</a>
+        <p style="font-size: 0.8em; color: #999; margin-top: 10px;">Zetta GmbH Katalog</p>
+    </div>
+
+    <div class="menu-group">
+        <div class="menu-title">1. 基材供应 <br><span>Industrielle Substrate</span></div>
+        <a class="menu-item active" onclick="showCategory('glass', this)">玻璃产品 / Glasprodukte</a>
+        <a class="menu-item" onclick="showCategory('optical', this)">光学玻璃 / Optik</a>
+        <a class="menu-item" onclick="showCategory('plastics', this)">塑料产品 / Kunststoffe</a>
+        <a class="menu-item" onclick="showCategory('metals', this)">金属加工 / Metall</a>
+    </div>
+
+    <div class="menu-group">
+        <div class="menu-title">2. 功能性产品 <br><span>Funktionale Produkte</span></div>
+        <a class="menu-item" onclick="showCategory('controller', this)">控制器 / Controller</a>
+        <a class="menu-item" onclick="showCategory('sensors', this)">传感器 / Sensoren</a>
+        <a class="menu-item" onclick="showCategory('energy', this)">能源产品 / Energie</a>
+    </div>
+</div>
+
+<div class="main-content">
+
+    <section id="glass" class="category-section active">
+        <div class="section-title">
+            <h2>玻璃产品 <span>Glasprodukte</span></h2>
+        </div>
+        <div class="product-sub-item">
+            <h3>A: 高硼硅钢化玻璃管 (Borosilikatglasrohre)</h3>
+            <p>耐温560度，应用于石油、化工医药等领域。工艺钢化处理，压力等级1MPa。</p>
+            <div class="gallery">
+                <img src="glass-tube-1.jpg" alt="Image 1">
+                <img src="glass-tube-2.jpg" alt="Image 2">
+            </div>
+        </div>
+        <div class="product-sub-item">
+            <h3>B: 耐高温高压钢化玻璃片 (Hitzebeständiges Glas)</h3>
+            <p>极限温度300度，3C认证。应用于高压容器观察窗口。</p>
+            <div class="gallery">
+                <img src="glass-scheibe-1.jpg"><img src="glass-scheibe-2.jpg"><img src="glass-scheibe-3.jpg">
+            </div>
+            <table class="spec-table">
+                <tr><td>Material / 材质</td><td>Floatglas gehärtet / 钢化浮法玻璃</td></tr>
+                <tr><td>Transparenz / 透光率</td><td>83%</td></tr>
+            </table>
+        </div>
+        <div class="product-sub-item">
+            <h3>C: 石英玻璃管 (Quarzglasrohre)</h3>
+            <p>支持极高温度环境，优异的化学稳定性。</p>
+            <div class="gallery">
+                <img src="shiying1.jpg"><img src="shiying2.jpg"><img src="shiying3.jpg"><img src="shiying4.jpg">
+            </div>
+        </div>
+    </section>
+
+    <section id="optical" class="category-section">
+        <div class="section-title">
+            <h2>光学玻璃 <span>Optische Gläser</span></h2>
+        </div>
+        <div class="gallery">
+            <img src="filter-ir.jpg"><img src="filter-ir2.jpg"><img src="filter-uv.jpg"><img src="filter-uv2.jpg">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <ul style="font-size: 0.9em; line-height: 2;">
+                <li>A: 红外滤光片 (IR-Filter)</li>
+                <li>B: 紫外滤光片 (UV-Filter)</li>
+                <li>C: 可见光滤光片 (Vis-Filter)</li>
+                <li>D: 光学透镜 (Optische Linsen)</li>
+            </ul>
+            <ul style="font-size: 0.9em; line-height: 2;">
+                <li>E: 带通滤光片 (Bandpassfilter)</li>
+                <li>F: 黄色滤光片 (Gelbfilter)</li>
+                <li>G: 红光滤光片 (Rotfilter)</li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="plastics" class="category-section">
+        <div class="section-title">
+            <h2>塑料产品加工 <span>Kunststoffbearbeitung</span></h2>
+        </div>
+        <p>提供亚克力 (Acryl)、POM、PVC等材料的精密CNC加工与激光切割。</p>
+        <div class="gallery">
+            <img src="plastic-cnc-1.jpg"><img src="plastic2.jpg"><img src="plastic3.jpg"><img src="plastic4.jpg">
+            <img src="plastic5.jpg"><img src="plastic6.jpg"><img src="plastic7.jpg"><img src="plastic8.jpg">
+        </div>
+    </section>
+
+    <section id="metals" class="category-section">
+        <div class="section-title">
+            <h2>不锈钢/钛合金产品加工 <span>Metal/Titanium Bearbeitung</span></h2>
+        </div>
+        <div class="gallery">
+            <img src="metal1.jpg"><img src="metal2.jpg"><img src="metal3.jpg"><img src="metal4.jpg">
+            <img src="metal5.jpg"><img src="metal6.jpg">
+        </div>
+    </section>
+
+    <section id="controller" class="category-section">
+        <div class="section-title">
+            <h2>控制器 <span>Analysatoren & Controller</span></h2>
+        </div>
+        <div class="product-sub-item">
+            <h3>A: 在线式控制器 (Online-Analysator)</h3>
+            <div class="gallery"><img src="controller1.jpg"><img src="controller2.jpg"></div>
+            <table class="spec-table">
+                <tr><td>Power / 电源</td><td>AC220V / DC12-24V</td></tr>
+                <tr><td>Output / 输出</td><td>2x 4-20mA, Relay</td></tr>
+            </table>
+        </div>
+        <div class="product-sub-item">
+            <h3>B: 手持式控制器 (Handmessgerät)</h3>
+            <div class="gallery"><img src="hcontroller1.jpg"></div>
+	<table class="spec-table">
+                <tr><td>Power / 电源</td><td>Lithium DC12V</td></tr>
+                <tr><td>Output / 输出</td><td>SD-Karte</td></tr>
+            </table>
+        </div>
+    </section>
+
+    <section id="sensors" class="category-section">
+        <div class="section-title">
+            <h2>传感器 <span>Sensoren</span></h2>
+        </div>
+        <div class="product-sub-item">
+            <h3>A: pH/ORP/电导率玻璃电极</h3>
+            <div class="gallery">
+                <img src="glasE1.jpg"><img src="glasE2.jpg"><img src="glasE3.jpg"><img src="glasE4.jpg">
+            </div>
+<div class="product-sub-item">
+            <h3>B: ISE电极</h3>
+            <div class="gallery">
+                <img src="iseE1.jpg"><img src="iseE2.jpg"><img src="iseE3.jpg"><img src="iseE4.jpg"><img src="iseE5.jpg"><img src="iseE6.jpg">
+	   </div>
+        </div>
+    </section>
+
+    <section id="energy" class="category-section">
+        <div class="section-title">
+            <h2>能源产品 <span>Energielösungen</span></h2>
+        </div>
+        <div id="solar" class="product-sub-item"><h3>太阳能电池产品 (Solarzellen)</h3>
+<div class="gallery">
+                <img src="solar1.jpg"><img src="solar2.jpg"><img src="solar3.jpg">            </div>
+</div>
+        <div id="lithium" class="product-sub-item"><h3>锂电池产品 (Lithium-Batterien)</h3>
+<div class="gallery">
+                <img src="lithium1.jpg"><img src="lithium2.jpg"><img src="lithium3.jpg">            </div>
+</div>
+    </section>
+
+</div>
+
+<script>
+    // 切换内容的函数
+    function showCategory(id, element) {
+        // 1. 隐藏所有部分
+        const sections = document.querySelectorAll('.category-section');
+        sections.forEach(s => s.classList.remove('active'));
+
+        // 2. 取消所有菜单项的 active 状态
+        const menuItems = document.querySelectorAll('.menu-item');
+        menuItems.forEach(item => item.classList.remove('active'));
+
+        // 3. 显示当前点击的部分
+        const target = document.getElementById(id);
+        if(target) {
+            target.classList.add('active');
+        }
+
+        // 4. 高亮当前菜单项
+        if(element) {
+            element.classList.add('active');
+        }
+
+        // 5. 让内容区滚动回顶部
+        document.querySelector('.main-content').scrollTop = 0;
+    }
+
+    // 处理页面加载逻辑（处理从首页跳转过来的锚点）
+    window.onload = function() {
+        const hash = window.location.hash.replace('#', '');
+        if (hash) {
+            // 找到对应的菜单项并触发点击
+            const activeMenu = Array.from(document.querySelectorAll('.menu-item'))
+                                    .find(item => item.getAttribute('onclick').includes(hash));
+            if (activeMenu) {
+                showCategory(hash, activeMenu);
+            }
+        }
+    };
+</script>
+
+</body>
+</html>
